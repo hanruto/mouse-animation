@@ -2,33 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="email=no" name="format-detection">
     <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+    </style>
 </head>
-<body>
-    
-    <div id='elem' style='position:relative;background:#000;width:1000px;height:1000px'>
+<body style='overflow:hidden'>
+    <div id='elem' style='position:relative;background:#fff;width:1000px;height:1000px'>
         <canvas id='canvas' width='2000' height='2000' style='width:100%;height:100%'></canvas>
     </div>
 </body>
-<script src='ui-animal.js'></script>
 <script>
-    var panel = new CanvasDraw(canvas) ;
     var elem = document.getElementById('elem');
+    var w = window.innerWidth;
+    var h = window.innerHeight-50;
+    elem.style.width = w+'px';
+    canvas.width = w*2;
+    elem.style.height = h+'px';
+    canvas.height = h*2;
+    function rn(s,e){
+        var start = s ? s : 0 ;
+        var end = e ? e : 255 ;
+        var i = end - start ;
+        var color =  parseInt(start+Math.random()*i);
+        return color;
+    }
+    function rc(opacity){
+        var op = opacity ? opacity : 1 ;
+        return 'rgba('+rn()+','+rn()+','+rn()+','+op+')'
+    }
+    function CanvasDraw(elem){
+        this.panel  = elem; 
+        var canvas = this.panel.getContext("2d");
+        this.drawHeart = function(x,y,r,d,color){
+            canvas.beginPath()
+            canvas.moveTo(x,y);
+            canvas.bezierCurveTo(
+                x-d/6,y-r/2,
+                x-d,y-r/2,
+                x-d,y
+            );
+            canvas.bezierCurveTo(
+                x-d,y+r/2,
+                x-d/6,y+r-r/4,
+                x,y+r
+            );
+            canvas.bezierCurveTo(
+                x+d/6,y+r-r/4,
+                x+d,y+r/2,
+                x+d,y
+            );
+            canvas.bezierCurveTo(
+                x+d,y-r/2,
+                x+d/6,y-r/2,
+                x,y
+            );
+            
+            canvas.fillStyle = color;
+            canvas.closePath();
+            
+            canvas.fill()
+            return this
+        }
+        this.clear = function(x,y){
+            
+            var cx = x ? x : canvas.width;
+            var cy = y ? y : canvas.height;
+            
+            canvas.clearRect(0,0,cx,cy)
+            return this
+        }
+    }
+
+    var panel = new CanvasDraw(canvas) ;
+    
     var t = elem.offsetTop+window.pageYOffset;
     var l = elem.offsetLeft+window.pageXOffset;
     
     var cfg = [];
     function render(){
-        panel.clear(2000,2000);
+        panel.clear(w*2,h*2);
         cfg.forEach(function(item,index){
             panel.drawHeart(item.x,item.y,item.r,item.r/4*3,item.c);
         })
     }
     // 根据数据渲染
     function loop(){
-        cfg.length>0;
         setTimeout(function(){
             loop()
             cfg.forEach(function(item,index){
@@ -46,8 +113,10 @@
     loop()
     var prevTime = new Date().getTime()-50;
     var nowTime = new Date().getTime();
-    elem.addEventListener('mousemove',function(e){
+    function createMoveData(event){
         // 获取时间差
+        
+        var e = event.type==='touchmove' ? event.touches[0] : event;
         nowTime = new Date().getTime();
         if(nowTime-prevTime>20){
             prevTime = nowTime;
@@ -64,49 +133,45 @@
                 t:false,
             });
         }
-    })
-    elem.addEventListener('touchmove',function(e){
-        // 获取时间差
-        nowTime = new Date().getTime();
-        if(nowTime-prevTime>20){
-            prevTime = nowTime;
-            nowTime = new Date().getTime();
-            var x = (e.clientX - l)*2;
-            var y = (e.clientY - t)*2;
+    }
+    function createMoveOutData(e){
+        var x = e.clientX;
+        var y = e.clientY;
+        for(var i=0 ; i<20 ; i++){
+            var x = cfg[cfg.length-1].x
+            var y = cfg[cfg.length-1].y
             cfg.push({
                 x:x,
                 y:y,
                 r:rn(30,100),
                 c:rc(0.6),
-                sx:rn(-5,5),
-                sy:rn(-10,-5),//向上飞
-                t:false,
+                sx:rn(-8,8),
+                sy:rn(-10,-6),//向下飞
+                t:true
             });
         }
-    })
-    elem.addEventListener('click',function(e){
-        // 获取时间差
-        nowTime = new Date().getTime();
-        if(nowTime-prevTime>20){
-            prevTime = nowTime;
-            nowTime = new Date().getTime();
-            var x = (e.clientX - l)*2;
-            var y = (e.clientY - t)*2;
-            for(var i=0 ; i<20 ; i++){
-                cfg.push({
-                    x:x,
-                    y:y,
-                    r:rn(20,100),
-                    c:rc(0.6),
-                    sx:rn(-8,8),
-                    sy:rn(-10,-6),//向下飞
-                    t:true
-                });
-            }
-            
-            
+    }
+    function createClickData(e){
+        for(var i=0 ; i<20 ; i++){
+            var x = cfg[cfg.length-1].x
+            var y = cfg[cfg.length-1].y
+            cfg.push({
+                x:x,
+                y:y,
+                r:rn(30,100),
+                c:rc(0.6),
+                sx:rn(-8,8),
+                sy:rn(-10,-6),//向下飞
+                t:true
+            });
         }
+    }
+    elem.addEventListener('mousemove',createMoveData)
+    document.addEventListener('touchmove',function(e){
+        e.preventDefault()
+        createMoveData(e)
     })
-    
+    document.addEventListener('touchend',createMoveOutData)
+    elem.addEventListener('click',createClickData)
 </script>
 </html>
