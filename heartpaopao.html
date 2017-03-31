@@ -65,6 +65,25 @@
             });
         }
     })
+    elem.addEventListener('touchmove',function(e){
+        // 获取时间差
+        nowTime = new Date().getTime();
+        if(nowTime-prevTime>20){
+            prevTime = nowTime;
+            nowTime = new Date().getTime();
+            var x = (e.clientX - l)*2;
+            var y = (e.clientY - t)*2;
+            cfg.push({
+                x:x,
+                y:y,
+                r:rn(30,100),
+                c:rc(0.6),
+                sx:rn(-5,5),
+                sy:rn(-10,-5),//向上飞
+                t:false,
+            });
+        }
+    })
     elem.addEventListener('click',function(e){
         // 获取时间差
         nowTime = new Date().getTime();
