@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id='elem' style='position:relative;background:#000;width:1000px;height:1000px'>
+        <canvas id='canvas' width='2000' height='2000' style='width:100%;height:100%'></canvas>
+    </div>
+</body>
+<script src='ui-animal.js'></script>
+<script>
+    var panel = new CanvasDraw(canvas) ;
+    var elem = document.getElementById('elem');
+    var t = elem.offsetTop+window.pageYOffset;
+    var l = elem.offsetLeft+window.pageXOffset;
+    
+    var cfg = [];
+    function render(){
+        panel.clear(2000,2000);
+        cfg.forEach(function(item,index){
+            panel.drawBall(item.x,item.y,item.r,item.c);
+        })
+    }
+    // 根据数据渲染
+    function loop(){
+        cfg.length>0;
+        setTimeout(function(){
+            loop()
+            cfg.forEach(function(item,index){
+                item.x += item.sx; //x变化
+                item.y += item.sy; //y变化
+                item.t && (item.sy += 1.2);
+                item.r -- ;
+            })
+            cfg = cfg.filter(function(item){
+                return item.r>=0;
+            })
+            render()
+        },16.6)
+    }
+    loop()
+    var prevTime = new Date().getTime()-50;
+    var nowTime = new Date().getTime();
+    elem.addEventListener('mousemove',function(e){
+        // 获取时间差
+        nowTime = new Date().getTime();
+        if(nowTime-prevTime>20){
+            prevTime = nowTime;
+            nowTime = new Date().getTime();
+            var x = (e.clientX - l)*2;
+            var y = (e.clientY - t)*2;
+            cfg.push({
+                x:x,
+                y:y,
+                r:rn(20,60),
+                c:rc(0.6),
+                sx:rn(-5,5),
+                sy:rn(-10,-5),//向上飞
+                t:false,
+            });
+        }
+    })
+    elem.addEventListener('click',function(e){
+        // 获取时间差
+        nowTime = new Date().getTime();
+        if(nowTime-prevTime>20){
+            prevTime = nowTime;
+            nowTime = new Date().getTime();
+            var x = (e.clientX - l)*2;
+            var y = (e.clientY - t)*2;
+            for(var i=0 ; i<20 ; i++){
+                cfg.push({
+                    x:x,
+                    y:y,
+                    r:rn(20,60),
+                    c:rc(0.6),
+                    sx:rn(-8,8),
+                    sy:rn(-10,-6),//向下飞
+                    t:true
+                });
+            }
+            
+            
+        }
+    })
+</script>
+</html>

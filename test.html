@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id='elem' style='position:relative;background:#fff;width:1000px;height:1000px'>
+        <canvas id='canvas' width='2000' height='2000' style='width:100%;height:100%'></canvas>
+    </div>
+</body>
+<script src='ui-animal.js'></script>
+<script>
+    var panel = new CanvasDraw(canvas) ;
+    var cxt = canvas.getContext('2d')
+    var elem = document.getElementById('elem');
+    var t = elem.offsetTop+window.pageYOffset;
+    var l = elem.offsetLeft+window.pageXOffset;
+    panel.drawHeart(400,400,400,300,'#123')
+    // cxt.beginPath()
+    // cxt.moveTo(400,400)
+    // cxt.bezierCurveTo(
+    //     350,200,
+    //     100,200,
+    //     100,400
+    // );
+    // cxt.bezierCurveTo(
+    //     100,600,
+    //     350,700,
+    //     400,800
+    // );
+    // cxt.bezierCurveTo(
+    //     450,700,
+    //     700,600,
+    //     700,400
+    // );
+    // cxt.bezierCurveTo(
+    //     700,200,
+    //     450,200,
+    //     400,400
+    // );
+    // cxt.closePath();
+    // cxt.fillStyle = '#f93';
+    // cxt.fill()
+</script>
+</html>
