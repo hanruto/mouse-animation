@@ -1,2 +1,2 @@
 # 在线演示地址
-> https://hanruto.github.io/mousemoveAnimation/
+> https://hanruto.github.io/mouse-animation
